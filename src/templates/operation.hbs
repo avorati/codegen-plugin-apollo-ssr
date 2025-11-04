@@ -1,0 +1,8 @@
+  async {{{functionName}}}(variables?: {{{variablesTypeName}}}, context?: any) {
+    const response = await this.client.{{#if isQuery}}query{{else}}mutate{{/if}}<{{{resultTypeName}}}, {{{variablesTypeName}}}>({
+      {{#if isQuery}}query{{else}}mutation{{/if}}: {{{document}}},
+      variables: this.getCustomVariables<{{{variablesTypeName}}}>(variables),
+      context,
+    });
+    return response;
+  }

@@ -1,0 +1,44 @@
+# Source files (only publish dist)
+src/
+tests/
+*.test.ts
+*.spec.ts
+
+# Configuration files
+tsconfig.json
+jest.config.js
+.gitignore
+.npmignore
+
+# Development files
+.prettierrc
+.prettierignore
+eslint.config.mjs
+.vscode/
+.idea/
+
+# Documentation (keep README.md, CHANGELOG.md, and CONTRIBUTING.md)
+docs/
+*.md
+!README.md
+!CHANGELOG.md
+!CONTRIBUTING.md
+
+# Build files
+*.tsbuildinfo
+
+# Environment
+.env*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Git
+.git/
+.gitignore
+
+# OS
+.DS_Store
+Thumbs.db
+

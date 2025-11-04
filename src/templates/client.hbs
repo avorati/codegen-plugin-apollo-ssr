@@ -1,0 +1,26 @@
+import { gql, HttpLink, NormalizedCacheObject, ApolloClient, InMemoryCache } from '@apollo/client';
+
+export class GraphqlCustomClient {
+  private readonly client: ApolloClient<NormalizedCacheObject>;
+
+  constructor(httpLink: HttpLink) {
+    this.client = new ApolloClient({
+      ssrMode: true,
+      link: httpLink,
+      cache: new InMemoryCache(),
+      defaultOptions: {
+        watchQuery: {
+          fetchPolicy: 'network-only',
+        },
+      },
+    });
+  }
+
+  protected getCustomVariables<TVariables = Record<string, unknown>>(variables?: TVariables) {
+    return {
+      ...variables,
+    } as TVariables;
+  }
+
+{{{operations}}}
+}
