@@ -1,12 +1,12 @@
-import { gql, HttpLink, NormalizedCacheObject, ApolloClient, InMemoryCache } from '@apollo/client';
+import { gql, HttpLink, ApolloClient, InMemoryCache, ApolloLink } from '@apollo/client';
 
 export class GraphqlCustomClient {
-  private readonly client: ApolloClient<NormalizedCacheObject>;
+  private readonly client: ApolloClient;
 
-  constructor(httpLink: HttpLink) {
+  constructor(link: ApolloLink) {
     this.client = new ApolloClient({
       ssrMode: true,
-      link: httpLink,
+      link: link,
       cache: new InMemoryCache(),
       defaultOptions: {
         watchQuery: {

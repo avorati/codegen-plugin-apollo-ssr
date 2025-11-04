@@ -66,11 +66,11 @@ describe('GraphQL Codegen Apollo SSR Plugin - Client Generation', () => {
       const result = plugin(schema, [{ document, location: 'test.graphql' }], {});
 
       expect(result).toContain(
-        "import { gql, HttpLink, NormalizedCacheObject, ApolloClient, InMemoryCache } from '@apollo/client'"
+        "import { gql, HttpLink, ApolloClient, InMemoryCache, ApolloLink } from '@apollo/client'"
       );
     });
 
-    it('should generate client constructor with HttpLink parameter', () => {
+    it('should generate client constructor with ApolloLink parameter', () => {
       const document = parse(`
         query GetUsers {
           users {
@@ -81,7 +81,7 @@ describe('GraphQL Codegen Apollo SSR Plugin - Client Generation', () => {
 
       const result = plugin(schema, [{ document, location: 'test.graphql' }], {});
 
-      expect(result).toContain('constructor(httpLink: HttpLink)');
+      expect(result).toContain('constructor(link: ApolloLink)');
     });
 
     it('should generate methods with proper typing', () => {
