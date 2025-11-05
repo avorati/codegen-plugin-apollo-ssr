@@ -59,7 +59,46 @@ Unlike other plugins that generate React hooks (like `typescript-react-apollo`),
 - [Getting Started](./docs/getting-started.md) - Complete setup guide
 - [Usage Examples](./docs/usage-examples.md) - Server Components, Server Actions, and more
 - [API Reference](./docs/api-reference.md) - Generated code structure
-- [Fragments](./docs/fragments.md) - Fragment support and best practices
+- [Fragments](./docs/fragments.md) - Fragment support, namespacing and best practices
+
+## Fragment Namespacing and Collisions
+
+When multiple files define fragments with the same name (e.g., `Media`, `Cta`), GraphQL requires unique fragment names across the entire document set. This plugin can automatically namespace fragment names per file to avoid collisions.
+
+Configuration example (codegen.ts):
+
+```ts
+import { CodegenConfig } from '@graphql-codegen/cli';
+
+const config: CodegenConfig = {
+  overwrite: true,
+  schema: 'https://your-api.com/graphql',
+  documents: 'src/**/*.graphql',
+  generates: {
+    './src/graphql/graphql.ts': {
+      plugins: [
+        'typescript',
+        'typescript-operations',
+        '@avorati/codegen-plugin-apollo-ssr',
+      ],
+      config: {
+        fragmentNamespace: 'file', // 'file' | 'folder' | 'none'
+        onNameCollision: 'rename', // 'rename' | 'error'
+        namespaceDepth: 1, // 1=FileBase, 2=ParentDir_FileBase
+      },
+    },
+  },
+};
+
+export default config;
+```
+
+Default behavior:
+- `fragmentNamespace: 'file'`
+- `onNameCollision: 'rename'`
+- `namespaceDepth: 1`
+
+This will rename `fragment Media` in `home.graphql` to `Home_Media`, and in `menu.graphql` to `Menu_Media`, updating local spreads accordingly.
 - [Comparison](./docs/comparison.md) - Comparison with other plugins
 - [Changelog](./CHANGELOG.md) - Version history and changes
 - [Contributing](./CONTRIBUTING.md) - How to contribute to this project

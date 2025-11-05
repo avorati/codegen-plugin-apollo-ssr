@@ -11,9 +11,13 @@ import {
 import * as Handlebars from 'handlebars';
 import * as path from 'path';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface PluginConfig {
-  // Configurações futuras do plugin podem ser adicionadas aqui
+  /** Namespace strategy for fragment names when collisions are detected */
+  fragmentNamespace?: 'file' | 'folder' | 'none';
+  /** Behavior on name collision */
+  onNameCollision?: 'rename' | 'error';
+  /** Controls how deep the namespace goes when basenames repeat (1 = FileBase, 2 = ParentDir_FileBase) */
+  namespaceDepth?: 1 | 2;
 }
 
 // Função para carregar templates de forma segura (funciona após build)
@@ -39,9 +43,154 @@ export const plugin: PluginFunction<PluginConfig> = (
   documents: Types.DocumentFile[],
   _config: PluginConfig
 ) => {
+  const config: Required<
+    Pick<PluginConfig, 'fragmentNamespace' | 'onNameCollision' | 'namespaceDepth'>
+  > = {
+    fragmentNamespace: _config.fragmentNamespace ?? 'file',
+    onNameCollision: _config.onNameCollision ?? 'rename',
+    namespaceDepth: _config.namespaceDepth ?? 1,
+  };
+
+  // Utilitários de nomeação/namespace
+  const toPascalCase = (value: string): string => {
+    return value
+      .replace(/[^a-zA-Z0-9]+/g, ' ')
+      .split(' ')
+      .filter(Boolean)
+      .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+      .join('');
+  };
+
+  const sanitizeGraphqlName = (value: string): string => {
+    // Mantém letras, números e underscore; remove demais caracteres
+    return value.replace(/[^A-Za-z0-9_]/g, '');
+  };
+
+  const fileBase = (filePath: string): string => toPascalCase(path.parse(filePath).name);
+  const parentAndFileBase = (filePath: string): string => {
+    const { dir } = path.parse(filePath);
+    const parent = path.basename(dir);
+    return `${toPascalCase(parent)}_${fileBase(filePath)}`;
+  };
+
+  // 1) Detecta colisões de fragmentos entre arquivos e cria mapeamentos de renomeação
+  type FragmentDefInfo = { node: FragmentDefinitionNode; filePath: string; docIndex: number };
+  const nameToDefs = new Map<string, FragmentDefInfo[]>();
+  documents.forEach((doc, idx) => {
+    if (!doc.document) return;
+    visit(doc.document, {
+      FragmentDefinition(node) {
+        const arr = nameToDefs.get(node.name.value) ?? [];
+        arr.push({
+          node,
+          filePath: doc.location || `doc_${idx}.graphql`,
+          docIndex: idx,
+        });
+        nameToDefs.set(node.name.value, arr);
+      },
+    });
+  });
+
+  const collisions = Array.from(nameToDefs.entries()).filter(([, defs]) => defs.length > 1);
+
+  if (collisions.length > 0 && config.onNameCollision === 'error') {
+    const lines: string[] = ['Not all fragments have an unique name:'];
+    for (const [name, defs] of collisions) {
+      lines.push(`  * ${name} found in:`);
+      for (const d of defs) lines.push(`      - ${d.filePath}`);
+    }
+    throw new Error(lines.join('\n'));
+  }
+
+  // Mapa: docIndex -> (oldName -> newName)
+  const perDocRenameMap: Map<number, Map<string, string>> = new Map();
+
+  if (
+    collisions.length > 0 &&
+    config.onNameCollision === 'rename' &&
+    config.fragmentNamespace !== 'none'
+  ) {
+    const occupiedNames = new Set<string>();
+
+    // Começa ocupados com nomes existentes (sem renomear) para evitar colisões futuras
+    for (const [name] of nameToDefs) occupiedNames.add(name);
+
+    for (const [origName, defs] of collisions) {
+      // Estratégia: nome baseado em arquivo (ou pasta+arquivo) + _ + origName
+      // Resolve empates entre basenames iguais
+      const proposedNames = defs.map((d) => {
+        const base =
+          config.namespaceDepth === 2 || config.fragmentNamespace === 'folder'
+            ? parentAndFileBase(d.filePath)
+            : fileBase(d.filePath);
+        return `${base}_${origName}`;
+      });
+
+      // Garante unicidade global com sufixo incremental estável se necessário
+      const finalNames: string[] = [];
+      const seen = new Map<string, number>();
+      proposedNames.forEach((n) => {
+        let candidate = sanitizeGraphqlName(n);
+        const initial = candidate;
+        let seq = seen.get(initial) ?? 0;
+        while (occupiedNames.has(candidate)) {
+          seq += 1;
+          candidate = `${initial}${seq}`;
+        }
+        seen.set(initial, seq);
+        occupiedNames.add(candidate);
+        finalNames.push(candidate);
+      });
+
+      defs.forEach((d, i) => {
+        const m = perDocRenameMap.get(d.docIndex) ?? new Map<string, string>();
+        m.set(origName, finalNames[i]);
+        perDocRenameMap.set(d.docIndex, m);
+      });
+    }
+  }
+
+  // 2) Aplica renomeação no AST por arquivo (definitions e spreads que referenciam o fragment local)
+  const transformedDocuments: Types.DocumentFile[] = documents.map((doc, idx) => {
+    const renameMap = perDocRenameMap.get(idx);
+    if (!doc.document || !renameMap || renameMap.size === 0) return doc;
+
+    const localDefs = new Set<string>();
+    visit(doc.document, {
+      FragmentDefinition(node) {
+        if (renameMap.has(node.name.value)) localDefs.add(node.name.value);
+      },
+    });
+
+    const newDoc = visit(doc.document, {
+      FragmentDefinition(node) {
+        const newName = renameMap.get(node.name.value);
+        if (newName) {
+          return {
+            ...node,
+            name: { ...node.name, value: newName },
+          };
+        }
+        return node;
+      },
+      FragmentSpread(node) {
+        if (localDefs.has(node.name.value)) {
+          const newName = renameMap.get(node.name.value);
+          if (newName) {
+            return { ...node, name: { ...node.name, value: newName } };
+          }
+        }
+        return node;
+      },
+    });
+
+    return { ...doc, document: newDoc };
+  });
+
+  // Recoleta fragments a partir dos documentos transformados
   // Coleta todos os fragments de todos os documentos
   const fragmentMap: { [name: string]: FragmentDefinitionNode } = {};
-  documents.forEach((doc) => {
+  transformedDocuments.forEach((doc) => {
     if (doc.document) {
       visit(doc.document, {
         FragmentDefinition(node) {
@@ -84,7 +233,7 @@ export const plugin: PluginFunction<PluginConfig> = (
   };
 
   // Processa cada operação (query ou mutation) de cada documento
-  documents.forEach((doc) => {
+  transformedDocuments.forEach((doc) => {
     const operationsDefinitions = doc.document?.definitions.filter(
       (def): def is OperationDefinitionNode => def.kind === 'OperationDefinition'
     );

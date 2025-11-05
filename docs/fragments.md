@@ -1,6 +1,6 @@
 # Fragments Support
 
-The plugin automatically handles GraphQL fragments, including nested and recursive fragments.
+The plugin automatically handles GraphQL fragments, including nested and recursive fragments, and can optionally namespace fragment names to avoid collisions across files.
 
 ## Basic Fragments
 
@@ -132,9 +132,34 @@ The plugin automatically includes:
 3. **Organize by Feature**: Group related fragments in the same file
 4. **Avoid Circular Dependencies**: Don't create fragments that reference each other cyclically
 
+## Fragment Namespacing and Collisions
+
+When multiple files define the same fragment name, enable namespacing to avoid collisions:
+
+```ts
+// codegen.ts
+plugins: [
+  'typescript',
+  'typescript-operations',
+  '@avorati/codegen-plugin-apollo-ssr',
+],
+config: {
+  fragmentNamespace: 'file', // 'file' | 'folder' | 'none'
+  onNameCollision: 'rename', // 'rename' | 'error'
+  namespaceDepth: 1, // 1=FileBase, 2=ParentDir_FileBase
+}
+```
+
+Examples of resulting names:
+- `home.graphql` with `fragment Media` → `Home_Media`
+- `menu.graphql` with `fragment Media` → `Menu_Media`
+
+If two files share the same basename (e.g., `feature/home.graphql` and `pages/home.graphql`), set `namespaceDepth: 2` or use `fragmentNamespace: 'folder'` to produce names like `Feature_Home_Media` and `Pages_Home_Media`.
+
+If you prefer a hard error instead of auto-rename, use `onNameCollision: 'error'`.
+
 ## Fragment Limitations
 
 - Fragments must be defined on valid types from your schema
-- Fragment names must be unique across all files
 - Anonymous fragments (without names) are not supported
 
