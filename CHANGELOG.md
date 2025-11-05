@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.2.2] - 2025-01-XX
+## [1.2.3] - 2025-11-05
+
+### Maintenance
+- Version bump and release housekeeping
+
+## [1.2.2] - 2025-11-05
 
 ### Improved
 - Refactored plugin codebase for better maintainability
@@ -77,10 +82,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Network-only fetch policy for SSR compatibility
 - Automatic fragment inclusion across multiple files
 
-[1.1.0]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.1.0
-[1.2.1]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.1
+[1.2.3]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.3
 [1.2.2]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.2
+[1.2.1]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.1
 [1.2.0]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.0
+[1.1.0]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.1.0
 [1.0.2]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.0.2
 [1.0.1]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.0.1
 [1.0.0]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.0.0
