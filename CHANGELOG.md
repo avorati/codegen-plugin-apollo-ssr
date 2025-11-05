@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2025-11-05
+
+### Fixed
+- Align package version with changelog and release commit order
+
+## [1.2.0] - 2025-11-05
+
+### Added
+- Fragment namespacing to avoid collisions across multiple files
+- Config options: `fragmentNamespace`, `onNameCollision`, `namespaceDepth`
+- Error mode with clear message listing conflicting files
+- Tests covering collisions, same basename handling, and error mode
+- Documentation updates (`README.md`, `docs/fragments.md`)
+
+### Changed
+- Preserve underscores in generated fragment names (e.g., `Home_Media`)
+
 ## [1.1.0] - 2024-11-04
 
 ### Changed
@@ -50,19 +67,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Network-only fetch policy for SSR compatibility
 - Automatic fragment inclusion across multiple files
 
-## [1.2.0] - 2025-11-05
-
-### Added
-- Fragment namespacing to avoid collisions across multiple files
-- Config options: `fragmentNamespace`, `onNameCollision`, `namespaceDepth`
-- Error mode with clear message listing conflicting files
-- Tests covering collisions, same basename handling, and error mode
-- Documentation updates (`README.md`, `docs/fragments.md`)
-
-### Changed
-- Preserve underscores in generated fragment names (e.g., `Home_Media`)
-
 [1.1.0]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.1.0
+[1.2.1]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.1
 [1.2.0]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.0
 [1.0.2]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.0.2
 [1.0.1]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.0.1
