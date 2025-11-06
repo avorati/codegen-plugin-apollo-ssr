@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.0] - 2025-01-27
+## [1.3.0] - 2025-11-06
 
 ### Changed
 - Changed `GraphqlCustomClient` constructor to accept `ApolloClientOptions<any>` instead of `ApolloLink`
@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated documentation with examples of custom cache configuration and Apollo Client options
 - Added tests to verify option merging behavior
 
-## [1.2.4] - 2025-01-27
+## [1.2.4] - 2025-11-06
 
 ### Fixed
 - Fixed outdated test expectation for client imports (removed HttpLink from expected imports)
