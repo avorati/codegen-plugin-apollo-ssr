@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2025-11-06
+
+### Fixed
+- Fixed cache configuration to be optional - uses cache from options if provided, otherwise uses default InMemoryCache
+- Cache can now be properly overridden by user options
+
 ## [1.3.0] - 2025-11-06
 
 ### Changed
@@ -100,6 +106,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Network-only fetch policy for SSR compatibility
 - Automatic fragment inclusion across multiple files
 
+[1.3.1]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.3.1
 [1.3.0]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.3.0
 [1.2.4]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.4
 [1.2.3]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.3

@@ -6,13 +6,13 @@ export class GraphqlCustomClient {
   constructor(options: ApolloClientOptions<any>) {
     this.client = new ApolloClient({
       ssrMode: true,
-      cache: new InMemoryCache(),
       defaultOptions: {
         watchQuery: {
           fetchPolicy: 'network-only',
         },
       },
       ...options,
+      cache: options?.cache ?? new InMemoryCache(),
     });
   }
 

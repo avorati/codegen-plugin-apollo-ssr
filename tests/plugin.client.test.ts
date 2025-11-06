@@ -97,9 +97,10 @@ describe('GraphQL Codegen Apollo SSR Plugin - Client Generation', () => {
 
       // Should have default values first, then spread user options
       expect(result).toContain('ssrMode: true');
-      expect(result).toContain('cache: new InMemoryCache()');
       expect(result).toContain("fetchPolicy: 'network-only'");
       expect(result).toContain('...options');
+      // Cache should be optional - only added if not provided in options
+      expect(result).toMatch(/cache.*InMemoryCache/);
     });
 
     it('should generate methods with proper typing', () => {
