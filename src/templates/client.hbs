@@ -1,7 +1,7 @@
-import { gql, HttpLink, ApolloClient, InMemoryCache, ApolloLink } from '@apollo/client';
+import { gql, ApolloClient, InMemoryCache, ApolloLink } from '@apollo/client';
 
 export class GraphqlCustomClient {
-  private readonly client: ApolloClient;
+  private readonly client: ApolloClient<any>;
 
   constructor(link: ApolloLink) {
     this.client = new ApolloClient({

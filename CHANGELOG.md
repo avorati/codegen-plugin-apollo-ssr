@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.4] - 2025-01-27
+
+### Fixed
+- Fixed outdated test expectation for client imports (removed HttpLink from expected imports)
+
 ## [1.2.3] - 2025-11-05
 
 ### Maintenance
@@ -82,6 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Network-only fetch policy for SSR compatibility
 - Automatic fragment inclusion across multiple files
 
+[1.2.4]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.4
 [1.2.3]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.3
 [1.2.2]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.2
 [1.2.1]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.1

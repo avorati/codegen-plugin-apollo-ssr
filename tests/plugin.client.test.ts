@@ -66,7 +66,7 @@ describe('GraphQL Codegen Apollo SSR Plugin - Client Generation', () => {
       const result = plugin(schema, [{ document, location: 'test.graphql' }], {});
 
       expect(result).toContain(
-        "import { gql, HttpLink, ApolloClient, InMemoryCache, ApolloLink } from '@apollo/client'"
+        "import { gql, ApolloClient, InMemoryCache, ApolloLink } from '@apollo/client'"
       );
     });
 
