@@ -1,18 +1,18 @@
-import { gql, ApolloClient, InMemoryCache, ApolloLink } from '@apollo/client';
+import { gql, ApolloClient, InMemoryCache, ApolloClientOptions } from '@apollo/client';
 
 export class GraphqlCustomClient {
   private readonly client: ApolloClient<any>;
 
-  constructor(link: ApolloLink) {
+  constructor(options: ApolloClientOptions<any>) {
     this.client = new ApolloClient({
       ssrMode: true,
-      link: link,
       cache: new InMemoryCache(),
       defaultOptions: {
         watchQuery: {
           fetchPolicy: 'network-only',
         },
       },
+      ...options,
     });
   }
 

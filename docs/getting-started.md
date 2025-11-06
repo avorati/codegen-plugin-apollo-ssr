@@ -72,7 +72,7 @@ yarn codegen
 Create a file to initialize the client (e.g., `src/lib/apollo-client.ts`):
 
 ```typescript
-import { HttpLink } from '@apollo/client';
+import { HttpLink, InMemoryCache } from '@apollo/client';
 import { GraphqlCustomClient } from '@/graphql/graphql';
 
 export function createApolloClient() {
@@ -83,7 +83,15 @@ export function createApolloClient() {
     },
   });
 
-  return new GraphqlCustomClient(httpLink);
+  return new GraphqlCustomClient({
+    link: httpLink,
+    cache: new InMemoryCache(),
+    // You can customize any Apollo Client option here:
+    // ssrMode: true,
+    // defaultOptions: { ... },
+    // connectToDevTools: true,
+    // etc.
+  });
 }
 ```
 

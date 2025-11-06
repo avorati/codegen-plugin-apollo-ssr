@@ -66,11 +66,11 @@ describe('GraphQL Codegen Apollo SSR Plugin - Client Generation', () => {
       const result = plugin(schema, [{ document, location: 'test.graphql' }], {});
 
       expect(result).toContain(
-        "import { gql, ApolloClient, InMemoryCache, ApolloLink } from '@apollo/client'"
+        "import { gql, ApolloClient, InMemoryCache, ApolloClientOptions } from '@apollo/client'"
       );
     });
 
-    it('should generate client constructor with ApolloLink parameter', () => {
+    it('should generate client constructor with ApolloClientOptions parameter', () => {
       const document = parse(`
         query GetUsers {
           users {
@@ -81,7 +81,25 @@ describe('GraphQL Codegen Apollo SSR Plugin - Client Generation', () => {
 
       const result = plugin(schema, [{ document, location: 'test.graphql' }], {});
 
-      expect(result).toContain('constructor(link: ApolloLink)');
+      expect(result).toContain('constructor(options: ApolloClientOptions<any>)');
+    });
+
+    it('should merge user options with defaults', () => {
+      const document = parse(`
+        query GetUsers {
+          users {
+            id
+          }
+        }
+      `);
+
+      const result = plugin(schema, [{ document, location: 'test.graphql' }], {});
+
+      // Should have default values first, then spread user options
+      expect(result).toContain('ssrMode: true');
+      expect(result).toContain('cache: new InMemoryCache()');
+      expect(result).toContain("fetchPolicy: 'network-only'");
+      expect(result).toContain('...options');
     });
 
     it('should generate methods with proper typing', () => {

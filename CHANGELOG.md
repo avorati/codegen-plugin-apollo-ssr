@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-01-27
+
+### Changed
+- Changed `GraphqlCustomClient` constructor to accept `ApolloClientOptions<any>` instead of `ApolloLink`
+  - Users can now configure all Apollo Client options including cache, defaultOptions, ssrMode, and more
+  - Default values (ssrMode: true, cache: InMemoryCache, fetchPolicy: 'network-only') are merged with user options
+  - User options take precedence over defaults
+  - This provides full flexibility for Apollo Client configuration
+
+### Improved
+- Updated documentation with examples of custom cache configuration and Apollo Client options
+- Added tests to verify option merging behavior
+
 ## [1.2.4] - 2025-01-27
 
 ### Fixed
@@ -87,6 +100,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Network-only fetch policy for SSR compatibility
 - Automatic fragment inclusion across multiple files
 
+[1.3.0]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.3.0
 [1.2.4]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.4
 [1.2.3]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.3
 [1.2.2]: https://github.com/avorati/codegen-plugin-apollo-ssr/releases/tag/v1.2.2

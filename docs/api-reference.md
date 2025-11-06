@@ -41,18 +41,18 @@ The main class that provides methods for all operations:
 
 ```typescript
 export class GraphqlCustomClient {
-  private readonly client: ApolloClient<NormalizedCacheObject>;
+  private readonly client: ApolloClient<any>;
 
-  constructor(httpLink: HttpLink) {
+  constructor(options: ApolloClientOptions<any>) {
     this.client = new ApolloClient({
       ssrMode: true,
-      link: httpLink,
       cache: new InMemoryCache(),
       defaultOptions: {
         watchQuery: {
           fetchPolicy: 'network-only',
         },
       },
+      ...options,
     });
   }
 
@@ -136,6 +136,57 @@ interface ApolloQueryResult<T> {
   networkStatus: NetworkStatus;
   // ... other Apollo Client properties
 }
+```
+
+## Constructor Options
+
+The constructor accepts `ApolloClientOptions<any>`, allowing you to configure all Apollo Client options including cache, defaultOptions, ssrMode, and more. Default values are merged with your options, with your options taking precedence.
+
+### Default Values
+
+The following defaults are applied if not specified:
+
+- `ssrMode: true`
+- `cache: new InMemoryCache()`
+- `defaultOptions.watchQuery.fetchPolicy: 'network-only'`
+
+### Example: Custom Cache Configuration
+
+```typescript
+import { HttpLink, InMemoryCache } from '@apollo/client';
+import { GraphqlCustomClient } from '@/graphql/graphql';
+
+const client = new GraphqlCustomClient({
+  link: new HttpLink({ uri: 'https://api.example.com/graphql' }),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          // Custom cache policies
+        },
+      },
+    },
+  }),
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: 'cache-and-network',
+    },
+  },
+});
+```
+
+### Example: Overriding Default Options
+
+```typescript
+import { HttpLink, InMemoryCache } from '@apollo/client';
+import { GraphqlCustomClient } from '@/graphql/graphql';
+
+const client = new GraphqlCustomClient({
+  link: new HttpLink({ uri: 'https://api.example.com/graphql' }),
+  cache: new InMemoryCache(),
+  ssrMode: false, // Override default
+  connectToDevTools: true, // Additional option
+});
 ```
 
 ## Custom Variables Hook
